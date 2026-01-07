@@ -104,6 +104,11 @@ create_userservice_superuser() {
     echo "Creating superuser with email: $USER_EMAIL"
     echo "Connecting to database at: $DB_HOST:$DB_PORT"
     
+    # Run migrations first
+    echo "Running migrations..."
+    python manage.py makemigrations --noinput || true
+    python manage.py migrate --noinput
+    
     # Create superuser using Python script (since userservice uses email as USERNAME_FIELD)
     python << EOF
 import os
@@ -188,6 +193,11 @@ create_teamservice_superuser() {
     echo "Creating superuser with username: $TEAM_USERNAME"
     echo "Connecting to database at: $DB_HOST:$DB_PORT"
     
+    # Run migrations first
+    echo "Running migrations..."
+    python manage.py makemigrations --noinput || true
+    python manage.py migrate --noinput
+    
     # Create superuser using Python script (teamservice uses Django's default User model)
     python << EOF
 import os
@@ -242,6 +252,10 @@ seed_userservice() {
         export DB_HOST="localhost"
     fi
     
+    # Ensure migrations are up to date
+    echo "Ensuring migrations are applied..."
+    python manage.py migrate --noinput || true
+    
     # Run seeder
     python manage.py seed_users || {
         echo "Warning: User seeding failed or users already exist."
@@ -270,6 +284,10 @@ seed_teamservice() {
     if [ "$DB_HOST" = "postgres" ]; then
         export DB_HOST="localhost"
     fi
+    
+    # Ensure migrations are up to date
+    echo "Ensuring migrations are applied..."
+    python manage.py migrate --noinput || true
     
     # Run seeder
     python manage.py seed_teams || {
