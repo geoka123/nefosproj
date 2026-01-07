@@ -1,14 +1,14 @@
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { AppLayout } from "@/components/layout/AppLayout";
-import { StatCard } from "@/components/dashboard/StatCard";
-import { TaskCard } from "@/components/tasks/TaskCard";
-import { TeamCard } from "@/components/teams/TeamCard";
-import { Button } from "@/components/ui/button";
+import { AppLayout } from "../components/layout/AppLayout";
+import { StatCard } from "../components/dashboard/StatCard";
+import { TaskCard } from "../components/tasks/TaskCard";
+import { TeamCard } from "../components/teams/TeamCard";
+import { Button } from "../components/ui/button";
 import { Users, CheckSquare, Clock, TrendingUp } from "lucide-react";
-import { teamsAPI, tasksAPI, type Team as APITeam, type Task } from "@/lib/api";
-import { toast } from "@/hooks/use-toast";
-import { useAuth } from "@/contexts/AuthContext";
+import { teamsAPI, tasksAPI, type Team as APITeam, type Task } from "../lib/api";
+import { toast } from "../hooks/use-toast";
+import { useAuth } from "../contexts/AuthContext";
 
 interface TaskCardTask {
   id: string;

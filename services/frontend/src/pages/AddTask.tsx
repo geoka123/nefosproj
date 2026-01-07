@@ -1,16 +1,16 @@
 import { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { AppLayout } from "@/components/layout/AppLayout";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Checkbox } from "@/components/ui/checkbox";
+import { AppLayout } from "../components/layout/AppLayout";
+import { Button } from "../components/ui/button";
+import { Input } from "../components/ui/input";
+import { Label } from "../components/ui/label";
+import { Textarea } from "../components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
+import { Checkbox } from "../components/ui/checkbox";
 import { ArrowLeft, CalendarIcon, Upload, X } from "lucide-react";
-import { toast } from "@/hooks/use-toast";
-import { cn } from "@/lib/utils";
-import { teamsAPI, tasksAPI, authAPI, type TeamDetails as APITeamDetails, type TeamMember as APITeamMember, type User as APIUser } from "@/lib/api";
+import { toast } from "../hooks/use-toast";
+import { cn } from "../lib/utils";
+import { teamsAPI, tasksAPI, authAPI, type TeamDetails as APITeamDetails, type TeamMember as APITeamMember, type User as APIUser } from "../lib/api";
 
 const AddTask = () => {
   const { id: _id } = useParams();

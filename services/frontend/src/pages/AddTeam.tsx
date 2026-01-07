@@ -1,14 +1,14 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { AppLayout } from "@/components/layout/AppLayout";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { AppLayout } from "../components/layout/AppLayout";
+import { Button } from "../components/ui/button";
+import { Input } from "../components/ui/input";
+import { Label } from "../components/ui/label";
+import { Textarea } from "../components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
 import { ArrowLeft, Users } from "lucide-react";
-import { toast } from "@/hooks/use-toast";
-import { authAPI, teamsAPI, type User as APIUser } from "@/lib/api";
+import { toast } from "../hooks/use-toast";
+import { authAPI, teamsAPI, type User as APIUser } from "../lib/api";
 
 const AddTeam = () => {
   const { id: teamId } = useParams();

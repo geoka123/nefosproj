@@ -1,13 +1,13 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { AppLayout } from "@/components/layout/AppLayout";
-import { TeamCard } from "@/components/teams/TeamCard";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { AppLayout } from "../components/layout/AppLayout";
+import { TeamCard } from "../components/teams/TeamCard";
+import { Button } from "../components/ui/button";
+import { Input } from "../components/ui/input";
 import { Plus, Search } from "lucide-react";
-import { toast } from "@/hooks/use-toast";
-import { teamsAPI, type Team as APITeam } from "@/lib/api";
-import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "../hooks/use-toast";
+import { teamsAPI, type Team as APITeam } from "../lib/api";
+import { useAuth } from "../contexts/AuthContext";
 
 interface DisplayTeam {
   id: string;

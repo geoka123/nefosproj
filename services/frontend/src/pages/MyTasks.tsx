@@ -1,16 +1,16 @@
 import { useState, useEffect } from "react";
-import { AppLayout } from "@/components/layout/AppLayout";
-import { TaskCard } from "@/components/tasks/TaskCard";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Label } from "@/components/ui/label";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { AppLayout } from "../components/layout/AppLayout";
+import { TaskCard } from "../components/tasks/TaskCard";
+import { Button } from "../components/ui/button";
+import { Input } from "../components/ui/input";
+import { Popover, PopoverContent, PopoverTrigger } from "../components/ui/popover";
+import { Checkbox } from "../components/ui/checkbox";
+import { Label } from "../components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
 import { Search, Filter } from "lucide-react";
-import { tasksAPI } from "@/lib/api";
-import { useAuth } from "@/contexts/AuthContext";
-import { toast } from "@/hooks/use-toast";
+import { tasksAPI } from "../lib/api";
+import { useAuth } from "../contexts/AuthContext";
+import { toast } from "../hooks/use-toast";
 
 // Helper function to parse date string (e.g., "Dec 30, 2025")
 const parseDate = (dateString: string): Date => {

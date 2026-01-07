@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { Calendar, User } from "lucide-react";
-import { StatusBadge, PriorityBadge } from "@/components/shared/StatusBadge";
-import { cn } from "@/lib/utils";
+import { StatusBadge, PriorityBadge } from "../shared/StatusBadge";
+import { cn } from "../../lib/utils";
 
 interface Task {
   id: string;

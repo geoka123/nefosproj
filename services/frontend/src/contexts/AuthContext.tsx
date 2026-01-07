@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
-import { authAPI, tokenStorage } from '@/lib/api';
-import type { User } from '@/lib/api';
+import { authAPI, tokenStorage } from '../lib/api';
+import type { User } from '../lib/api';
 
 interface AuthContextType {
   user: User | null;

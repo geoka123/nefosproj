@@ -1,12 +1,12 @@
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { AppLayout } from "@/components/layout/AppLayout";
-import { StatusBadge, PriorityBadge } from "@/components/shared/StatusBadge";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { AppLayout } from "../components/layout/AppLayout";
+import { StatusBadge, PriorityBadge } from "../components/shared/StatusBadge";
+import { Button } from "../components/ui/button";
+import { Input } from "../components/ui/input";
+import { Label } from "../components/ui/label";
+import { Textarea } from "../components/ui/textarea";
+import { Avatar, AvatarFallback } from "../components/ui/avatar";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
 import { 
   ArrowLeft, 
   Calendar, 
@@ -23,9 +23,9 @@ import {
   Save
 } from "lucide-react";
 import { useState, useEffect } from "react";
-import { tasksAPI, authAPI, type TaskDetails as APITaskDetails, type TaskComment, type TaskFile, type CommentFile, type User as APIUser } from "@/lib/api";
-import { toast } from "@/hooks/use-toast";
-import { useAuth } from "@/contexts/AuthContext";
+import { tasksAPI, authAPI, type TaskDetails as APITaskDetails, type TaskComment, type TaskFile, type CommentFile, type User as APIUser } from "../lib/api";
+import { toast } from "../hooks/use-toast";
+import { useAuth } from "../contexts/AuthContext";
 
 const TaskDetail = () => {
   const { id } = useParams();

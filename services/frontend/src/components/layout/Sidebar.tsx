@@ -8,9 +8,9 @@ import {
   Layers,
   Shield
 } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { useAuth } from "@/contexts/AuthContext";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { cn } from "../../lib/utils";
+import { useAuth } from "../../contexts/AuthContext";
+import { Avatar, AvatarFallback } from "../ui/avatar";
 
 const navItems = [
   { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard" },
