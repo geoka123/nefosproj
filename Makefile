@@ -1,4 +1,4 @@
-.PHONY: help up down restart logs clean setup build
+.PHONY: help up down restart logs clean clean-stale setup build check-env build-services start-services wait-services
 
 # Default target
 help:
@@ -15,7 +15,7 @@ help:
 	@echo "  make help     - Show this help message"
 
 # Main target: build, start services, and run setup
-up: check-env build-services start-services wait-services setup
+up: check-env clean-stale build-services start-services wait-services setup
 	@echo ""
 	@echo "========================================="
 	@echo "✓ All services are up and running!"
@@ -44,6 +44,17 @@ check-env:
 	else \
 		echo ".env file exists, skipping creation."; \
 	fi
+
+# Clean up any stale containers that might conflict
+clean-stale:
+	@echo "Checking for stale containers..."
+	@for container in postgres mongodb userservice teamservice taskservice frontend mongo-express; do \
+		if docker ps -a --format '{{.Names}}' | grep -q "^$$container$$"; then \
+			echo "Removing stale container: $$container"; \
+			docker rm -f $$container 2>/dev/null || true; \
+		fi; \
+	done
+	@echo "✓ Stale container check complete"
 
 # Build Docker images
 build-services:
@@ -120,5 +131,9 @@ build: check-env build-services
 clean:
 	@echo "Stopping services and removing volumes..."
 	@docker compose down -v
+	@echo "Removing any orphaned containers..."
+	@for container in postgres mongodb userservice teamservice taskservice frontend mongo-express; do \
+		docker rm -f $$container 2>/dev/null || true; \
+	done
 	@echo "✓ Cleaned up volumes and containers"
 
