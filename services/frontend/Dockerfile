@@ -8,6 +8,9 @@ COPY package*.json ./
 # Install dependencies
 RUN npm install
 
+# Copy source files (will be overridden by volume mount in dev, but needed for initial build)
+COPY . .
+
 # Expose Vite dev server port
 EXPOSE 5173
 
