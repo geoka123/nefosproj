@@ -90,6 +90,9 @@ services:
       - /app/node_modules
     environment:
       - NODE_ENV=${NODE_ENV}
+      - VITE_API_URL=${VITE_API_URL:-http://localhost:8000}
+      - VITE_TEAM_API_URL=${VITE_TEAM_API_URL:-http://localhost:8001}
+      - VITE_TASK_API_URL=${VITE_TASK_API_URL:-http://localhost:8002}
     restart: unless-stopped
     depends_on:
       - userservice
