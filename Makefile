@@ -30,6 +30,44 @@ up: check-env clean-stale build-services start-services wait-services setup
 	@echo "  - MongoDB:       localhost:27017"
 	@echo "  - Mongo Express: http://localhost:8081"
 	@echo ""
+	@echo "========================================="
+	@echo "Admin Credentials"
+	@echo "========================================="
+	@echo ""
+	@echo "Frontend Application:"
+	@echo "  URL:      http://localhost:5173"
+	@if [ -f .env ]; then \
+		EMAIL=$$(grep "^SETUP_USER_EMAIL=" .env | cut -d'=' -f2); \
+		PASSWORD=$$(grep "^SETUP_USER_PASSWORD=" .env | cut -d'=' -f2); \
+		echo "  Email:    $$EMAIL"; \
+		echo "  Password: $$PASSWORD"; \
+	fi
+	@echo ""
+	@echo "UserService Django Admin:"
+	@echo "  URL:      http://localhost:8000/admin/"
+	@if [ -f .env ]; then \
+		EMAIL=$$(grep "^SETUP_USER_EMAIL=" .env | cut -d'=' -f2); \
+		PASSWORD=$$(grep "^SETUP_USER_PASSWORD=" .env | cut -d'=' -f2); \
+		echo "  Email:    $$EMAIL"; \
+		echo "  Password: $$PASSWORD"; \
+	fi
+	@echo ""
+	@echo "TeamService Django Admin:"
+	@echo "  URL:      http://localhost:8001/admin/"
+	@if [ -f .env ]; then \
+		USERNAME=$$(grep "^SETUP_TEAM_USERNAME=" .env | cut -d'=' -f2); \
+		PASSWORD=$$(grep "^SETUP_TEAM_PASSWORD=" .env | cut -d'=' -f2); \
+		echo "  Username: $$USERNAME"; \
+		echo "  Password: $$PASSWORD"; \
+	fi
+	@echo ""
+	@echo "Mongo Express:"
+	@echo "  URL:      http://localhost:8081"
+	@echo "  Username: admin"
+	@echo "  Password: admin"
+	@echo ""
+	@echo "========================================="
+	@echo ""
 
 # Check if .env file exists, create from .env.example if not
 check-env:
