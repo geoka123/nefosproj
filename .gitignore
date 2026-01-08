@@ -15,7 +15,9 @@ dist/
 downloads/
 eggs/
 .eggs/
-lib/
+# Ignore Python lib directories but NOT frontend src/lib
+**/venv/lib/
+**/venv/lib64/
 lib64/
 parts/
 sdist/
