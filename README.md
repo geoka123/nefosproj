@@ -245,6 +245,11 @@ nefos/
 - **Docker** and **Docker Compose** installed
 - **Make** utility (usually pre-installed on Linux/macOS)
 - **Git** (for cloning the repository)
+- **Python 3.x** (for setup scripts that run on the host)
+- **python3-venv** (for creating virtual environments)
+  - Ubuntu/Debian: `sudo apt-get install python3-venv`
+  - RHEL/CentOS: `sudo yum install python3-venv`
+  - Fedora: `sudo dnf install python3-venv`
 
 ### Quick Start
 
@@ -273,6 +278,37 @@ nefos/
    - **Task Service API**: http://localhost:8002
    - **Mongo Express**: http://localhost:8081 (admin/admin)
 
+### Clean Install / Fresh Clone Setup
+
+If you've just cloned the repository or performed a clean install, you may need to create virtual environments before the setup script can run successfully:
+
+1. **Ensure python3-venv is installed**:
+   ```bash
+   # Ubuntu/Debian
+   sudo apt-get install python3-venv
+   
+   # RHEL/CentOS
+   sudo yum install python3-venv
+   
+   # Fedora
+   sudo dnf install python3-venv
+   ```
+
+2. **Create virtual environments**:
+   ```bash
+   make create-venvs
+   # Or alternatively: bash scripts/create_venvs.sh
+   ```
+   
+   This is only needed once after cloning or if `venv/` folders are deleted.
+
+3. **Start services**:
+   ```bash
+   make up
+   ```
+   
+   The setup script will now run successfully as the virtual environments exist.
+
 ### Manual Setup (Alternative)
 
 If you prefer to run services manually:
@@ -288,7 +324,18 @@ If you prefer to run services manually:
    docker compose up -d
    ```
 
-3. **Run setup script**:
+3. **Create virtual environments** (required after clean install):
+   ```bash
+   make create-venvs
+   # Or: bash scripts/create_venvs.sh
+   ```
+   
+   This will:
+   - Create virtual environments for all backend services
+   - Install Python dependencies from requirements.txt
+   - Verify the setup was successful
+
+4. **Run setup script**:
    ```bash
    bash scripts/setup.sh
    ```
@@ -296,14 +343,23 @@ If you prefer to run services manually:
 ### Available Make Commands
 
 ```bash
-make up       # Build and start all services, then run setup
-make down     # Stop all services
-make restart  # Restart all services (down then up)
-make logs     # View logs from all services
-make setup    # Run setup script only
-make build    # Build Docker images without starting
-make clean    # Stop services and remove volumes (WARNING: deletes all data)
-make help     # Show help message
+make up           # Build and start all services, then run setup
+make down         # Stop all services
+make restart      # Restart all services (down then up)
+make logs         # View logs from all services
+make setup        # Run setup script only
+make create-venvs # Create virtual environments for all backend services
+make build        # Build Docker images without starting
+make clean        # Stop services and remove volumes (WARNING: deletes all data)
+make help         # Show help message
+```
+
+### Available Scripts
+
+```bash
+bash scripts/create_venvs.sh  # Create virtual environments for all services
+bash scripts/setup.sh          # Create superusers, media directories, and seed data
+bash scripts/init_db.sh        # Initialize PostgreSQL databases (called by Docker)
 ```
 
 ### First Login
@@ -410,19 +466,40 @@ NODE_ENV=development
 - Verify MongoDB credentials match in `.env` and `docker-compose.yml`
 - Rebuild taskservice: `docker compose build taskservice`
 
-### 3. **Setup Script Fails with "ModuleNotFoundError"**
+### 3. **Setup Script Fails with "ModuleNotFoundError" or "venv/bin/activate: No such file or directory"**
 
-**Problem**: Python dependencies not installed when running `setup.sh`
+**Problem**: Python dependencies not installed or virtual environment not created
 
 **Solution**:
-- The setup script should auto-create virtual environments and install dependencies
-- If it fails, manually run:
+- Ensure `python3-venv` is installed:
+  ```bash
+  # Ubuntu/Debian
+  sudo apt-get install python3-venv
+  
+  # RHEL/CentOS
+  sudo yum install python3-venv
+  
+  # Fedora
+  sudo dnf install python3-venv
+  ```
+- Run the dedicated venv creation script:
+  ```bash
+  bash scripts/create_venvs.sh
+  ```
+- Or manually create venvs:
   ```bash
   cd services/userservice  # or teamservice/taskservice
   python3 -m venv venv
   source venv/bin/activate
   pip install -r requirements.txt
+  deactivate
   ```
+- After creating venvs, run the setup script again:
+  ```bash
+  bash scripts/setup.sh
+  ```
+
+**Note**: Virtual environments (`venv/` folders) are excluded from git and must be created after cloning the repository or after a clean install.
 
 ### 4. **Environment Variable Syntax Errors**
 

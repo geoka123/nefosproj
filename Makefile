@@ -1,18 +1,19 @@
-.PHONY: help up down restart logs clean clean-stale setup build check-env build-services start-services wait-services
+.PHONY: help up down restart logs clean clean-stale setup build check-env build-services start-services wait-services create-venvs
 
 # Default target
 help:
 	@echo "NEFOS Project Makefile"
 	@echo ""
 	@echo "Available targets:"
-	@echo "  make up       - Build and start all services in detached mode, then run setup"
-	@echo "  make down     - Stop all services"
-	@echo "  make restart  - Restart all services (down then up)"
-	@echo "  make logs     - View logs from all services"
-	@echo "  make setup    - Run setup script (create superusers and media directories)"
-	@echo "  make build    - Build all Docker images without starting"
-	@echo "  make clean    - Stop services and remove volumes (WARNING: deletes data)"
-	@echo "  make help     - Show this help message"
+	@echo "  make up           - Build and start all services in detached mode, then run setup"
+	@echo "  make down         - Stop all services"
+	@echo "  make restart      - Restart all services (down then up)"
+	@echo "  make logs         - View logs from all services"
+	@echo "  make setup        - Run setup script (create superusers and media directories)"
+	@echo "  make create-venvs - Create virtual environments for all backend services"
+	@echo "  make build        - Build all Docker images without starting"
+	@echo "  make clean        - Stop services and remove volumes (WARNING: deletes data)"
+	@echo "  make help         - Show this help message"
 
 # Main target: build, start services, and run setup
 up: check-env clean-stale build-services start-services wait-services setup
@@ -102,6 +103,11 @@ wait-services:
 	@echo "Waiting for backend services to initialize..."
 	@sleep 10
 	@echo "✓ All services are ready"
+
+# Create virtual environments
+create-venvs:
+	@echo "Creating virtual environments..."
+	@bash scripts/create_venvs.sh
 
 # Run setup script
 setup:

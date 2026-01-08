@@ -19,6 +19,30 @@ if [ ! -f "docker-compose.yml" ]; then
     exit 1
 fi
 
+# Pre-flight checks
+echo "Running pre-flight checks..."
+
+# Check if python3 is installed
+if ! command -v python3 &> /dev/null; then
+    echo "Error: python3 is not installed or not in PATH"
+    echo "Please install Python 3 before continuing."
+    exit 1
+fi
+
+# Check if python3-venv is available
+if ! python3 -m venv --help &> /dev/null; then
+    echo "Error: python3-venv module is not available"
+    echo "Please install it using one of the following commands:"
+    echo "  Ubuntu/Debian: sudo apt-get install python3-venv"
+    echo "  RHEL/CentOS:   sudo yum install python3-venv"
+    echo "  Fedora:        sudo dnf install python3-venv"
+    exit 1
+fi
+
+echo "✓ Python 3 and venv module are available"
+echo "✓ Python version: $(python3 --version)"
+echo ""
+
 # Check if .env file exists, if not copy from .env.example
 if [ ! -f ".env" ]; then
     if [ -f ".env.example" ]; then
@@ -61,7 +85,19 @@ create_userservice_superuser() {
     # Check if virtual environment exists
     if [ ! -d "venv" ]; then
         echo "Creating virtual environment for userservice..."
-        python3 -m venv venv
+        if ! python3 -m venv venv; then
+            echo "Error: Failed to create virtual environment. Is python3-venv installed?"
+            echo "Try: sudo apt-get install python3-venv (Ubuntu/Debian)"
+            echo "Or: sudo yum install python3-venv (RHEL/CentOS)"
+            return 1
+        fi
+        echo "✓ Virtual environment created successfully"
+    fi
+    
+    # Verify venv was created successfully
+    if [ ! -f "venv/bin/activate" ]; then
+        echo "Error: Virtual environment creation failed - activate script not found"
+        return 1
     fi
     
     # Activate virtual environment
@@ -77,8 +113,16 @@ create_userservice_superuser() {
     # Install/upgrade dependencies if requirements.txt exists
     if [ -f "requirements.txt" ]; then
         echo "Installing Python dependencies..."
-        pip install --upgrade pip --quiet
-        pip install -r requirements.txt --quiet
+        if ! pip install --upgrade pip --quiet; then
+            echo "Warning: Failed to upgrade pip, continuing with existing version"
+        fi
+        echo "Installing packages from requirements.txt..."
+        if ! pip install -r requirements.txt --quiet; then
+            echo "Error: Failed to install Python dependencies"
+            deactivate
+            return 1
+        fi
+        echo "✓ Dependencies installed successfully"
     fi
     
     # Get superuser details from environment variables
@@ -151,7 +195,19 @@ create_teamservice_superuser() {
     # Check if virtual environment exists
     if [ ! -d "venv" ]; then
         echo "Creating virtual environment for teamservice..."
-        python3 -m venv venv
+        if ! python3 -m venv venv; then
+            echo "Error: Failed to create virtual environment. Is python3-venv installed?"
+            echo "Try: sudo apt-get install python3-venv (Ubuntu/Debian)"
+            echo "Or: sudo yum install python3-venv (RHEL/CentOS)"
+            return 1
+        fi
+        echo "✓ Virtual environment created successfully"
+    fi
+    
+    # Verify venv was created successfully
+    if [ ! -f "venv/bin/activate" ]; then
+        echo "Error: Virtual environment creation failed - activate script not found"
+        return 1
     fi
     
     # Activate virtual environment
@@ -167,8 +223,16 @@ create_teamservice_superuser() {
     # Install/upgrade dependencies if requirements.txt exists
     if [ -f "requirements.txt" ]; then
         echo "Installing Python dependencies..."
-        pip install --upgrade pip --quiet
-        pip install -r requirements.txt --quiet
+        if ! pip install --upgrade pip --quiet; then
+            echo "Warning: Failed to upgrade pip, continuing with existing version"
+        fi
+        echo "Installing packages from requirements.txt..."
+        if ! pip install -r requirements.txt --quiet; then
+            echo "Error: Failed to install Python dependencies"
+            deactivate
+            return 1
+        fi
+        echo "✓ Dependencies installed successfully"
     fi
     
     # Get superuser details from environment variables
@@ -239,7 +303,13 @@ seed_userservice() {
     
     # Check if virtual environment exists
     if [ ! -d "venv" ]; then
-        echo "Error: Virtual environment not found."
+        echo "Error: Virtual environment not found. Run setup to create it first."
+        return 1
+    fi
+    
+    # Verify venv was created successfully
+    if [ ! -f "venv/bin/activate" ]; then
+        echo "Error: Virtual environment is corrupted - activate script not found"
         return 1
     fi
     
@@ -272,7 +342,13 @@ seed_teamservice() {
     
     # Check if virtual environment exists
     if [ ! -d "venv" ]; then
-        echo "Error: Virtual environment not found."
+        echo "Error: Virtual environment not found. Run setup to create it first."
+        return 1
+    fi
+    
+    # Verify venv was created successfully
+    if [ ! -f "venv/bin/activate" ]; then
+        echo "Error: Virtual environment is corrupted - activate script not found"
         return 1
     fi
     
@@ -306,7 +382,19 @@ seed_taskservice() {
     # Check if virtual environment exists
     if [ ! -d "venv" ]; then
         echo "Creating virtual environment for taskservice..."
-        python3 -m venv venv
+        if ! python3 -m venv venv; then
+            echo "Error: Failed to create virtual environment. Is python3-venv installed?"
+            echo "Try: sudo apt-get install python3-venv (Ubuntu/Debian)"
+            echo "Or: sudo yum install python3-venv (RHEL/CentOS)"
+            return 1
+        fi
+        echo "✓ Virtual environment created successfully"
+    fi
+    
+    # Verify venv was created successfully
+    if [ ! -f "venv/bin/activate" ]; then
+        echo "Error: Virtual environment creation failed - activate script not found"
+        return 1
     fi
     
     # Activate virtual environment
@@ -322,8 +410,16 @@ seed_taskservice() {
     # Install/upgrade dependencies if requirements.txt exists
     if [ -f "requirements.txt" ]; then
         echo "Installing Python dependencies..."
-        pip install --upgrade pip --quiet
-        pip install -r requirements.txt --quiet
+        if ! pip install --upgrade pip --quiet; then
+            echo "Warning: Failed to upgrade pip, continuing with existing version"
+        fi
+        echo "Installing packages from requirements.txt..."
+        if ! pip install -r requirements.txt --quiet; then
+            echo "Error: Failed to install Python dependencies"
+            deactivate
+            return 1
+        fi
+        echo "✓ Dependencies installed successfully"
     fi
     
     # Override MONGO_HOST to localhost when running from host (not in Docker)
