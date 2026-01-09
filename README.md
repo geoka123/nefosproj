@@ -7,7 +7,8 @@
 - [Project Structure](#project-structure)
 - [Getting Started](#getting-started)
 - [Environment Variables](#environment-variables)
-- [Common Issues & Solutions](#common-issues--solutions)
+- [Database Management](#database-management)
+- [User Interface Guide](#user-interface-guide)
 - [Development Workflow](#development-workflow)
 
 ---
@@ -445,159 +446,316 @@ NODE_ENV=development
 
 ---
 
-## Common Issues & Solutions
+## Database Management
 
-### 1. **Database Connection Errors**
+NEFOS uses two database systems:
+- **PostgreSQL**: For user and team management (`userdb` and `teamdb`)
+- **MongoDB**: For task management (`taskdb`)
 
-**Problem**: `could not translate host name "postgres" to address`
+### PostgreSQL Web Interfaces (Django Admin)
 
-**Solution**: 
-- Ensure Docker services are running: `docker compose ps`
-- Check that `DB_HOST` in `.env` is set to `postgres` (for Docker) or `localhost` (for host execution)
-- Wait for PostgreSQL to be healthy: `docker compose ps postgres`
+PostgreSQL databases are managed through Django admin interfaces for each service.
 
-### 2. **MongoDB Connection Errors**
+#### UserService Django Admin
 
-**Problem**: `ModuleNotFoundError: No module named 'mongoengine'` or MongoDB connection failures
+**Access:**
+- **URL**: http://localhost:8000/admin/
+- **Email**: `admin@example.com` (or value from `.env` `SETUP_USER_EMAIL`)
+- **Password**: `admin123` (or value from `.env` `SETUP_USER_PASSWORD`)
 
-**Solution**:
-- Ensure MongoDB container is running: `docker compose ps mongodb`
-- Check that `MONGO_HOST` in `.env` is set correctly
-- Verify MongoDB credentials match in `.env` and `docker-compose.yml`
-- Rebuild taskservice: `docker compose build taskservice`
+**What you can do:**
+- Manage users and their roles
+- View authentication tokens
+- Edit user profiles
 
-### 3. **Setup Script Fails with "ModuleNotFoundError" or "venv/bin/activate: No such file or directory"**
+#### TeamService Django Admin
 
-**Problem**: Python dependencies not installed or virtual environment not created
+**Access:**
+- **URL**: http://localhost:8001/admin/
+- **Username**: `admin` (or value from `.env` `SETUP_TEAM_USERNAME`)
+- **Password**: `admin123` (or value from `.env` `SETUP_TEAM_PASSWORD`)
 
-**Solution**:
-- Ensure `python3-venv` is installed:
-  ```bash
-  # Ubuntu/Debian
-  sudo apt-get install python3-venv
-  
-  # RHEL/CentOS
-  sudo yum install python3-venv
-  
-  # Fedora
-  sudo dnf install python3-venv
-  ```
-- Run the dedicated venv creation script:
-  ```bash
-  bash scripts/create_venvs.sh
-  ```
-- Or manually create venvs:
-  ```bash
-  cd services/userservice  # or teamservice/taskservice
-  python3 -m venv venv
-  source venv/bin/activate
-  pip install -r requirements.txt
-  deactivate
-  ```
-- After creating venvs, run the setup script again:
-  ```bash
-  bash scripts/setup.sh
-  ```
+**What you can do:**
+- Manage teams
+- View team members
+- Edit team relationships
 
-**Note**: Virtual environments (`venv/` folders) are excluded from git and must be created after cloning the repository or after a clean install.
+### MongoDB Web Interface
 
-### 4. **Environment Variable Syntax Errors**
+**Mongo Express** provides a web-based interface for MongoDB.
 
-**Problem**: `.env: line X: syntax error near unexpected token`
+**Access:**
+- **URL**: http://localhost:8081
+- **Username**: `admin`
+- **Password**: `admin`
 
-**Solution**:
-- Ensure `.env` file uses proper format: `VARIABLE_NAME=value` (no spaces around `=`)
-- Check for special characters in values (especially `JWT_SECRET_KEY`)
-- The setup script handles special characters, but ensure no unescaped quotes
+**What you can do:**
+- Browse collections (tasks, comments, files)
+- View and edit documents
+- Run queries
+- Monitor database statistics
 
-### 5. **Port Already in Use**
+---
 
-**Problem**: `Error: bind: address already in use`
+## User Interface Guide
 
-**Solution**:
-- Check which process is using the port:
-  ```bash
-  # Linux
-  sudo lsof -i :5173  # or 8000, 8001, 8002, etc.
-  # macOS
-  lsof -i :5173
-  ```
-- Stop the conflicting service or change the port in `docker-compose.yml`
+### Overview
 
-### 6. **Frontend Not Loading**
+NEFOS provides a modern, dark-themed interface for managing tasks, teams, and users. The UI is role-based, showing different features depending on your user role (Admin, Team Leader, or Member).
 
-**Problem**: Frontend shows blank page or connection errors
+### User Roles & Permissions
 
-**Solution**:
-- Check frontend container logs: `docker compose logs frontend`
-- Ensure backend services are running: `docker compose ps`
-- Verify API endpoints are accessible:
-  - http://localhost:8000/api/users/ (UserService)
-  - http://localhost:8001/api/teams/ (TeamService)
-  - http://localhost:8002/api/tasks/ (TaskService)
+| Role | Permissions |
+|------|-------------|
+| **Admin** | Full system access, manage all users, teams, and tasks; view all data |
+| **Team Leader** | Create/manage teams, create/assign tasks, edit task details, add team members |
+| **Member** | View assigned tasks, update task status, add comments, upload files |
 
-### 7. **File Upload Failures**
+### Main Features
 
-**Problem**: Files not uploading or not accessible
+#### 1. Dashboard (Home Page)
 
-**Solution**:
-- Check that `services/taskservice/media/` directory exists and has write permissions
-- Verify media directories were created: `ls -la services/taskservice/media/`
-- Check taskservice logs: `docker compose logs taskservice`
-- Ensure `MEDIA_ROOT` and `MEDIA_URL` are correctly configured in `taskservice/settings.py`
+**Access:** Click "Dashboard" in sidebar or navigate to `/`
 
-### 8. **Seeder Not Running**
+**Features:**
+- **Statistics Cards**: Quick overview of total teams, tasks, in-progress, and completed tasks
+- **Status Breakdown**: Visual progress bars showing task distribution
+- **Recent Teams**: Last 3 teams created (with "Go to My Teams" link)
+- **Recent Tasks**: Last 3 tasks assigned to you (with "Go to My Tasks" link)
 
-**Problem**: Seeders skip with "already exists" message
+**Available to:** All users
 
-**Solution**:
-- Seeders only run if databases are empty (besides superusers)
-- To re-seed, clean the database:
-  ```bash
-  make clean  # WARNING: This deletes all data
-  make up
-  ```
+#### 2. Teams Management
 
-### 9. **JWT Authentication Errors**
+**Access:** Click "My Teams" in sidebar or navigate to `/teams`
 
-**Problem**: "Invalid token" or authentication failures
+**List View:**
+- Browse all teams you're part of (or all teams if Admin)
+- Each team card shows:
+  - Team name and description
+  - Member count
+  - Task count
+  - Created date
+  - "View Details" button
 
-**Solution**:
-- Ensure `JWT_SECRET_KEY` is the same across all services
-- Check that tokens are being sent in request headers
-- Verify token expiration settings in Django settings
-- Clear browser localStorage and re-login
+**Team Details Page:**
+- Click any team to view details
+- Shows:
+  - Team members list with roles
+  - All tasks assigned to the team
+  - Task statistics
+- **Team Leaders/Admins can:**
+  - Edit team information
+  - Add/remove members
+  - Delete team (Admin only)
 
-### 10. **Docker Build Failures**
+**Creating a Team:**
+1. Click "Add Team" button
+2. Fill in team name and description
+3. Select team members from list
+4. Click "Create Team"
 
-**Problem**: `docker compose build` fails
+**Available to:** All users (view), Team Leaders/Admins (create/edit)
 
-**Solution**:
-- Check Docker daemon is running: `docker ps`
-- Clear Docker cache: `docker compose build --no-cache`
-- Ensure Docker has enough disk space: `docker system df`
-- Check Dockerfile syntax in each service directory
+#### 3. Task Management
 
-### 11. **PostgreSQL Health Check Fails**
+**Access:** Click "My Tasks" in sidebar or navigate to `/tasks`
 
-**Problem**: `wait-services` target times out
+**List View:**
+- View all your assigned tasks (or all tasks if Admin)
+- Filter by:
+  - Status (TODO, IN_PROGRESS, DONE)
+  - Priority (Low, Medium, High)
+  - Time range (custom date picker)
+- Each task card shows:
+  - Title and description excerpt
+  - Priority badge (color-coded)
+  - Status badge (color-coded)
+  - Due date
+  - Assigned user
+  - Team name
+  - "View Details" button
 
-**Solution**:
-- Check PostgreSQL logs: `docker compose logs postgres`
-- Verify database initialization completed: `docker compose exec postgres psql -U postgres -l`
-- Increase timeout in `Makefile` if needed
-- Ensure `init_db.sh` has execute permissions: `chmod +x scripts/init_db.sh`
+**Task Details Page:**
+- Complete task information
+- Description
+- Priority and status
+- Due date
+- Assigned user and team
+- Attached files (downloadable)
+- Comments section
+- **Members can:**
+  - Update task status
+  - Add comments
+  - Upload files to comments
+  - View/download attachments
+- **Team Leaders/Admins can:**
+  - Edit task title and description
+  - Add task files
+  - Delete task (Admin only)
 
-### 12. **Permission Denied Errors**
+**Creating a Task:**
+1. Click "Add Task" button
+2. Fill in:
+   - Title
+   - Description (optional)
+   - Priority (Low/Medium/High)
+   - Due date
+   - Select team
+   - Select assignee (from team members)
+3. Optionally attach files (PDF, JPG)
+4. Click "Create Task"
 
-**Problem**: Scripts fail with "Permission denied"
+**Available to:** All users (view assigned), Team Leaders/Admins (create/edit)
 
-**Solution**:
-- Make scripts executable:
-  ```bash
-  chmod +x scripts/*.sh
-  ```
-- Check file ownership if running with sudo
+#### 4. User Management (Admin Only)
+
+**Access:** Click "Admin Panel" in sidebar or navigate to `/admin`
+
+**Features:**
+- View all users in the system
+- User cards show:
+  - Name and email
+  - Role (Admin, Team Leader, Member)
+  - Active status
+  - Join date
+- Filter and search users
+- View user statistics
+
+**Available to:** Admin only
+
+### Common Workflows
+
+#### Workflow 1: Team Leader Creating a Project
+
+1. **Create a Team**
+   - Go to "My Teams"
+   - Click "Add Team"
+   - Enter team name and description
+   - Select team members
+   - Click "Create Team"
+
+2. **Create Tasks for the Team**
+   - Go to "My Tasks"
+   - Click "Add Task"
+   - Fill in task details
+   - Select your team
+   - Assign to a team member
+   - Attach relevant files
+   - Click "Create Task"
+
+3. **Monitor Progress**
+   - Dashboard shows progress overview
+   - Visit team details to see all team tasks
+   - Check task statuses
+
+#### Workflow 2: Member Completing a Task
+
+1. **View Assigned Tasks**
+   - Go to "My Tasks"
+   - See all tasks assigned to you
+   - Filter by status if needed
+
+2. **Work on a Task**
+   - Click task card to view details
+   - Read description and requirements
+   - Download attached files if any
+
+3. **Update Progress**
+   - Change status from TODO → IN_PROGRESS
+   - Add comments about progress
+   - Upload work files to comments
+
+4. **Complete Task**
+   - When finished, change status to DONE
+   - Add final comment
+   - Upload deliverable files
+
+#### Workflow 3: Admin Managing the System
+
+1. **Monitor Overall Activity**
+   - Dashboard shows system-wide statistics
+   - View all teams and tasks
+
+2. **Manage Users**
+   - Go to "Admin Panel"
+   - View all registered users
+   - Check user roles and status
+
+3. **Oversee Projects**
+   - Access any team's details
+   - View and edit any task
+   - Ensure proper task distribution
+
+### UI Components Guide
+
+#### Priority Badges
+
+- 🟢 **Low**: Teal/Cyan color - Non-urgent tasks
+- 🟡 **Medium**: Yellow/Orange color - Standard priority
+- 🔴 **High**: Red color - Urgent, requires immediate attention
+
+#### Status Badges
+
+- ⚪ **TODO**: Gray - Not started yet
+- 🟡 **IN_PROGRESS**: Yellow - Currently being worked on
+- 🟢 **DONE**: Green - Completed tasks
+
+#### File Management
+
+**Supported File Types:**
+- **PDF documents**: For task requirements, deliverables
+- **JPG images**: For screenshots, designs, photos
+
+**File Operations:**
+- **Upload**: Drag & drop or click to browse
+- **Download**: Click filename in attachments list
+- **View**: Files are stored and accessible via direct links
+
+#### Comments Section
+
+- **Add Comment**: Type in text area and click "Add Comment"
+- **Attach Files**: Click attachment icon to add files to comment
+- **Delete Comment**: Only your own comments (trash icon)
+- **Timestamps**: All comments show creation date/time
+- **User Attribution**: Each comment shows author's name
+
+### Navigation
+
+**Sidebar Menu:**
+- Dashboard (Home)
+- My Teams
+- My Tasks
+- Admin Panel (Admin only)
+- Logout
+
+**Top Bar:**
+- User profile (shows current user name)
+- Role indicator
+- Quick navigation breadcrumbs
+
+### Keyboard Shortcuts
+
+- `Esc`: Close modals/dialogs
+- `Tab`: Navigate through form fields
+- `Enter`: Submit forms (when in text input)
+
+### Mobile Responsiveness
+
+The UI is fully responsive and works on:
+- Desktop (1920x1080 and above)
+- Laptop (1366x768 and above)
+- Tablet (768x1024)
+- Mobile (375x667 and above)
+
+### Tips for Best Experience
+
+1. **Use Filters**: On My Tasks page, use status/priority filters to focus on relevant tasks
+2. **Regular Updates**: Update task status regularly to keep team informed
+3. **Descriptive Comments**: Add detailed comments when changing status
+4. **Attach Files**: Include relevant files for better context
+5. **Check Dashboard**: Start each session by checking dashboard for overview
+6. **Team Collaboration**: Use comments for team communication on tasks
 
 ---
 
@@ -632,35 +790,6 @@ NODE_ENV=development
 - **Backend**: Restart the service to apply changes:
   ```bash
   docker compose restart userservice
-  ```
-
-### Database Migrations
-
-Run migrations manually if needed:
-
-```bash
-# UserService
-docker compose exec userservice python manage.py migrate
-
-# TeamService
-docker compose exec teamservice python manage.py migrate
-
-# TaskService (MongoDB - no migrations needed)
-```
-
-### Accessing Databases
-
-**PostgreSQL**:
-```bash
-docker compose exec postgres psql -U postgres -d userdb
-docker compose exec postgres psql -U postgres -d teamdb
-```
-
-**MongoDB**:
-- Web UI: http://localhost:8081 (admin/admin)
-- CLI:
-  ```bash
-  docker compose exec mongodb mongosh -u admin -p <password>
   ```
 
 ## Additional Notes
